@@ -140,7 +140,11 @@ class PostProcessCommand(AbstractCommand):
             print('Reading SubjectOnDisk '+str(file_index+1)+'/'+str(len(input_output_pairs))+' at ' + input_path + '...')
 
             # Read all the contents from the current SubjectOnDisk
-            subject: nimble.biomechanics.SubjectOnDisk = nimble.biomechanics.SubjectOnDisk(input_path)
+            try:
+                subject: nimble.biomechanics.SubjectOnDisk = nimble.biomechanics.SubjectOnDisk(input_path)
+            except Exception as e:
+                print(f"Error reading {input_path}: Skipping.")
+                continue
 
             drop_trials: List[int] = []
             if only_dynamics:
@@ -344,7 +348,8 @@ class PostProcessCommand(AbstractCommand):
                 new_overall_pass.setOpenSimFileText(subject.getHeaderProto().getProcessingPasses()[-2].getOpenSimFileText())
                 pass_skels.append(pass_skels[-1])
 
-                use_lowpass = False
+                # use_lowpass = False
+                use_lowpass = True
 
                 for trial in range(subject.getNumTrials()):
                     if trial in drop_trials:
